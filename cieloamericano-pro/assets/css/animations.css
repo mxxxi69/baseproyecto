@@ -1,0 +1,246 @@
+/* ============================================================
+   animations.css
+   Keyframes, animaciones de entrada al scroll (reveal),
+   y transiciones especiales.
+   ============================================================ */
+
+
+/* ── 1. KEYFRAMES ────────────────────────────────────────────
+   Definiciones de las animaciones base.
+   ────────────────────────────────────────────────────────── */
+
+/* Pulso del punto animado en el hero badge */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(201, 168, 76, 0.4);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(0.9);
+    box-shadow: 0 0 0 6px rgba(201, 168, 76, 0);
+  }
+}
+
+/* Indicador de scroll que cae */
+@keyframes scrollDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+/* Carrusel de clientes: desliza de derecha a izquierda */
+@keyframes scrollClients {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%); /* El 50% porque el track se duplica con JS */
+  }
+}
+
+/* Entrada desde abajo (para elementos generales) */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Entrada desde la izquierda */
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Entrada desde la derecha */
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Resplandor pulsante del acento */
+@keyframes glowPulse {
+  0%, 100% {
+    text-shadow: 0 0 20px rgba(201, 168, 76, 0.2);
+  }
+  50% {
+    text-shadow: 0 0 40px rgba(201, 168, 76, 0.5);
+  }
+}
+
+/* Parpadeo suave del cursor de texto */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* Rotación continua (para íconos de carga) */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+
+/* ── 2. ANIMACIONES DE ENTRADA (HERO) ───────────────────────
+   Los elementos del hero entran en secuencia con delay.
+   data-delay="0", "1", "2", etc. controla el orden.
+   El JS activa la clase .animated para lanzar las animaciones.
+   ────────────────────────────────────────────────────────── */
+
+/* Estado inicial: invisible */
+.fade-in {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Estado activo: visible */
+.fade-in.animated {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Delays escalonados para la secuencia del hero */
+.fade-in[data-delay="0"].animated { transition-delay: 0.1s; }
+.fade-in[data-delay="1"].animated { transition-delay: 0.25s; }
+.fade-in[data-delay="2"].animated { transition-delay: 0.45s; }
+.fade-in[data-delay="3"].animated { transition-delay: 0.65s; }
+.fade-in[data-delay="4"].animated { transition-delay: 0.85s; }
+
+
+/* ── 3. SCROLL REVEAL ────────────────────────────────────────
+   Elementos que aparecen cuando entran al viewport.
+   El IntersectionObserver en main.js añade la clase .revealed.
+   ────────────────────────────────────────────────────────── */
+
+/* Estado inicial: invisible y desplazado */
+.reveal-up,
+.reveal-left,
+.reveal-right {
+  opacity: 0;
+  transition:
+    opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform; /* Optimización GPU */
+}
+
+.reveal-up    { transform: translateY(40px); }
+.reveal-left  { transform: translateX(-50px); }
+.reveal-right { transform: translateX(50px); }
+
+/* Estado visible (cuando JS añade .revealed) */
+.reveal-up.revealed,
+.reveal-left.revealed,
+.reveal-right.revealed {
+  opacity: 1;
+  transform: translate(0);
+}
+
+/* Delay escalonado para cards en grids */
+/* El JS lees data-delay="0", "1", "2", etc. en los hijos */
+.reveal-up[data-delay="1"] { transition-delay: 0.1s; }
+.reveal-up[data-delay="2"] { transition-delay: 0.2s; }
+.reveal-up[data-delay="3"] { transition-delay: 0.3s; }
+.reveal-up[data-delay="4"] { transition-delay: 0.4s; }
+
+
+/* ── 4. ANIMACIONES DE INTERACCIÓN (MICRO) ──────────────────
+   Detalles que hacen la web sentirse "viva".
+   ────────────────────────────────────────────────────────── */
+
+/* Título del hero con resplandor suave y continuo */
+.title__line--accent {
+  animation: glowPulse 3s ease infinite;
+}
+
+/* Íconos del logo con brillo */
+.logo__icon {
+  animation: glowPulse 4s ease infinite;
+}
+
+/* Cards de servicio: sombra al hover ya definida en components.css */
+
+/* Enlace activo en la navbar (clase añadida por JS) */
+.nav__link.active {
+  color: var(--color-text-primary);
+}
+
+.nav__link.active::after {
+  width: 100%;
+}
+
+/* Estado de botón enviando formulario */
+.btn--sending {
+  opacity: 0.7;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn--sending::after {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin-left: var(--space-2);
+}
+
+
+/* ── 5. REDUCCIÓN DE MOVIMIENTO ─────────────────────────────
+   Para usuarios que tienen activada la preferencia de
+   reducir movimiento (accesibilidad).
+   ────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* Revelar todos los elementos sin animación */
+  .fade-in,
+  .reveal-up,
+  .reveal-left,
+  .reveal-right {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Scroll del carrusel: detenido */
+  .clientes__track {
+    animation: none;
+  }
+}
